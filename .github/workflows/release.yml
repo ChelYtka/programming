@@ -53,7 +53,7 @@ jobs:
         ./vcpkg integrate install
 
     - name: Install Boost
-      run: vcpkg install boost   
+      run: vcpkg install boost-test   
 
   build_windows:        
     runs-on: windows-latest
