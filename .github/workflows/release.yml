@@ -1,10 +1,10 @@
-name: Build Windows Project
+name: 'C++ CI'
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
+      - feature/github_actions
 
 jobs:
   build:
@@ -25,13 +25,9 @@ jobs:
         cd YourProject.Tests
         dotnet test
 
-name: 'C++ CI'
 
-on:
-  push:
-    branches:
-      - main
-      - feature/github_actions
+
+
 
 jobs:
   build_Linux:
