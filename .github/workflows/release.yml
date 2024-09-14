@@ -7,7 +7,7 @@ on:
       - feature/github_actions
 
 jobs:
-  build:
+  build_Linux:
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
