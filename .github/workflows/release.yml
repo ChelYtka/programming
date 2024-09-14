@@ -7,6 +7,16 @@ on:
       - feature/github_actions
 
 jobs:
+  - name: Install vcpkg
+    run: |
+      git clone https://github.com/microsoft/vcpkg.git
+      cd vcpkg
+      ./bootstrap-vcpkg.bat
+      ./vcpkg integrate install
+
+  - name: Install Boost
+    run: vcpkg install boost
+    
   build_Windows:
     runs-on: windows-latest
     
