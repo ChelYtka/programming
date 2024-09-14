@@ -18,11 +18,11 @@ jobs:
       uses: microsoft/setup-msbuild@v1
 
     - name: Build with MSBuild
-      run: msbuild /p:Configuration=Release YourProject.sln
+      run: msbuild /p:Configuration=Release programming.sln
 
     - name: Run tests
       run: |
-        cd YourProject.Tests
+        cd programming.Tests
         dotnet test
 
   build_Linux:
