@@ -1,32 +1,38 @@
-name: 'C++ CI'  # имя рабочего процесса
+name: 'C++ CI'
 
-on:             # определяет тригер запуска
+on:
   push:
     branches:
       - main
       - feature/github_actions
 
-jobs:           # набор заданий
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    permissions: write-all
 
-  build-linux:        # имя задания
-    runs-on: ubuntu-latest          # среда выполения
-    permissions: write-all          # предоставляем все разрешения
-    steps:                          # шаги
-      - uses: actions/checkout@v3   # проверяем код репозитория
+    steps:
+      - uses: actions/checkout@v3
         with:
           submodules: true
-      # устанавливаем зависимость, устанавливаем библиотеки
-      - run: sudo apt-get update && sudo apt-get install libboost-test-dev -y
-      # процесс сборки
-      - run: cmake . -DPATCH_VERSION=${{ github.run_number }}
-      - run: cmake --build .
-      # выполняем тесты
-      - run: cmake --build . --target test
-      # создаём пакеты, упаковываем прил. после сборки
-      - run: cmake --build . --target package
-      # создаём релиз с тегом, соответствующим номеру запуска
+
+      # Install dependencies for Linux
+      - name: Install Dependencies
+        run: sudo apt-get update && sudo apt-get install libboost-test-dev cmake g++ -y
+
+      # Configure and Build using CMake for Linux
+      - name: Configure and Build
+        run: |
+          cmake -S . -B build -DPATCH_VERSION=${{ github.run_number }}
+          cmake --build build --config Release
+
+      # Run Tests for Linux
+      - name: Run Tests
+        run: ctest --test-dir build --output-on-failure
+
+      # Create Release on GitHub for Linux
       - name: Create Release
-        id: create_release
+        id: create_release_linux
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -35,48 +41,49 @@ jobs:           # набор заданий
           release_name: Release ${{ github.run_number }}
           draft: false
           prerelease: false
-      # загружаем созданный пакет
+
+      # Upload Release Asset for Linux
       - name: Upload Release Asset
-        id: upload-release-asset
+        id: upload-release-asset-linux
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./helloworld-0.0.${{ github.run_number }}-Linux.deb
-          asset_name: helloworld-0.0.${{ github.run_number }}-Linux.deb
-          asset_content_type: application/vnd.debian.binary-package
+          upload_url: ${{ steps.create_release_linux.outputs.upload_url }}
+          asset_path: ./helloworld-0.0.${{ github.run_number }}-Linux.deb  # Adjust path as needed.
+          asset_name: helloworld-0.0.${{ github.run_number }}-Linux.deb  # Adjust name as needed.
+          asset_content_type: application/vnd.debian.binary-package  # Adjust content type as needed.
 
   build-windows:
     runs-on: windows-latest
     permissions: write-all
+
     steps:
       - uses: actions/checkout@v3
 
-      # Install dependencies (example for vcpkg)
+      # Install dependencies for Windows (using vcpkg)
       - name: Install vcpkg
         run: |
           git clone https://github.com/microsoft/vcpkg.git
           .\vcpkg\bootstrap-vcpkg.bat
 
-      # Install necessary libraries using vcpkg or directly through Chocolatey if needed.
-      # Example for installing Boost via vcpkg (adjust as necessary)
+      # Install necessary libraries using vcpkg for Windows
       - name: Install Boost Libraries
         run: .\vcpkg\vcpkg install boost-test
 
-      # Configure and build using CMake
-      - run: cmake . -DPATCH_VERSION=${{ github.run_number }} -G "Visual Studio 16 2019"
-      - run: cmake --build . --config Release
+      # Configure and Build using CMake for Windows
+      - name: Configure and Build
+        run: |
+          cmake -S . -B build -DPATCH_VERSION=${{ github.run_number }} -G "Visual Studio 16 2019"
+          cmake --build build --config Release
 
-      # Run tests
-      - run: ctest --output-on-failure
+      # Run Tests for Windows
+      - name: Run Tests
+        run: ctest --test-dir build --output-on-failure
 
-      # Package creation (if applicable)
-      # Add your packaging step here if needed
-
-      # Create Release on GitHub
+      # Create Release on GitHub for Windows
       - name: Create Release
-        id: create_release
+        id: create_release_windows
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -86,15 +93,14 @@ jobs:           # набор заданий
           draft: false
           prerelease: false
 
-      # Upload Release Asset
-      # Adjust paths according to your build artifacts
+      # Upload Release Asset for Windows
       - name: Upload Release Asset
-        id: upload-release-asset
+        id: upload-release-asset-windows
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.create_release_windows.outputs.upload_url }}
           asset_path: ./helloworld-0.0.${{ github.run_number }}-Windows.zip  # Adjust path as needed.
           asset_name: helloworld-0.0.${{ github.run_number }}-Windows.zip  # Adjust name as needed.
           asset_content_type: application/zip  # Adjust content type as needed.
