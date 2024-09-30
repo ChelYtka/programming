@@ -16,19 +16,17 @@ jobs:
         with:
           submodules: true
 
-      # Install dependencies for Linux
-      - name: Install Dependencies
-        run: sudo apt-get update && sudo apt-get install libboost-test-dev cmake g++ -y
+      # устанавливаем зависимость, устанавливаем библиотеки
+      - run: sudo apt-get update && sudo apt-get install libboost-test-dev -y
+      # процесс сборки
+      - run: cmake . -DPATCH_VERSION=${{ github.run_number }}
+      - run: cmake --build .
+      # выполняем тесты
+      - run: cmake --build . --target test
+      # создаём пакеты, упаковываем прил. после сборки
+      - run: cmake --build . --target package
+      # создаём релиз с тегом, соответствующим номеру запуска
 
-      # Configure and Build using CMake for Linux
-      - name: Configure and Build
-        run: |
-          cmake -S . -B build -DPATCH_VERSION=${{ github.run_number }}
-          cmake --build build --config Release
-
-      # Run Tests for Linux
-      - name: Run Tests
-        run: ctest --test-dir build --output-on-failure
 
       # Create Release on GitHub for Linux
       - name: Create Release
