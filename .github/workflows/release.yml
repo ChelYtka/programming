@@ -61,7 +61,7 @@ jobs:
       # Configure and Build using CMake for Windows
       - name: Configure and Build
         run: |
-          cmake -S . -B build -DPATCH_VERSION=${{ github.run_number }} -G "Visual Studio 16 2019"
+          cmake -S . -B build -DPATCH_VERSION=${{ github.run_number }}
           cmake --build build --config Release
 
       # Run Tests for Windows
