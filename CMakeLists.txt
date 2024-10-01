@@ -55,27 +55,24 @@ else ()
     )
 endif()
 
-
-
 install(TARGETS helloworld_cli RUNTIME DESTINATION bin)
 
-set(CPACK_GENERATOR DEB)
-
-
-
-set(CPACK_GENERATOR NSIS)
-set(CPACK_PACKAGE_NAME "HelloWorld")
-set(CPACK_PACKAGE_DESCRIPTION "A simple helloworld application for Windows")
-
+# CPack configuration for both Linux and Windows
+if (WIN32)
+    set(CPACK_GENERATOR NSIS)
+    set(CPACK_PACKAGE_NAME "HelloWorld")
+    set(CPACK_PACKAGE_DESCRIPTION "A simple helloworld application for Windows")
+else()
+    set(CPACK_GENERATOR DEB)
+    set(CPACK_PACKAGE_NAME "helloworld")
+    set(CPACK_PACKAGE_DESCRIPTION "A simple helloworld application for Linux")
+endif()
 
 set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
 set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
-
 set(CPACK_PACKAGE_CONTACT example@example.com)
-
 include(CPack)
 
 enable_testing()
-
 add_test(test_version test_version)
