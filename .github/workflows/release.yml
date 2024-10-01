@@ -7,7 +7,7 @@ on:
       - feature/github_actions
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
@@ -39,3 +39,27 @@ jobs:
           asset_path: ./helloworld-0.0.${{ github.run_number }}-Linux.deb
           asset_name: helloworld-0.0.${{ github.run_number }}-Linux.deb
           asset_content_type: application/vnd.debian.binary-package
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Build and package
+      run: |
+        echo "Building application..."
+        # Add build commands here
+
+    - name: Create installer
+      run: |
+        echo "Creating installer..."
+        # Add commands to create installer here
+
+    - name: Upload installer
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: path/to/installer.exe
+        asset_name: MyInstaller.exe
+        asset_content_type: application/octet-stream
