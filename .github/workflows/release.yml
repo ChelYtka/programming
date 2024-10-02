@@ -79,9 +79,9 @@ jobs:
         with:
           submodules: true # Загружает подмодули, если они есть
 
-      #- uses: actions/setup-python@v4
-      #  with:
-      #    python-version: '3.x'
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
 
       - name: Download Boost Archive
         uses: actions/download-artifact@v3
