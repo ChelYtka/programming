@@ -88,13 +88,14 @@ jobs:
         with:
           name: boost
           path: boost
+          url: https://www.boost.org/users/download/boost_1_81_0.zip
 
       - name: Extract Boost Archive
-        run: 7z x ./boost/boost_version.zip -o./boost  # Replace 'boost_version' with your actual version
+        run: 7z x ./boost/boost_1_81_0.zip -o./boost  # Replace 'boost_version' with your actual version
 
       - name: Set Boost Environment Variables
         run: |
-          echo "Boost_INCLUDE_DIR=./boost/boost_version/boost" >> $GITHUB_ENV
+          echo "Boost_INCLUDE_DIR=./boost/boost_1_81_0/boost" >> $GITHUB_ENV
           echo "Boost_DIR=./boost" >> $GITHUB_ENV
 
       # Генерация сборочных файлов
@@ -109,11 +110,11 @@ jobs:
       - name: Run tests  # Название шага
         run: cmake --build . --target test  # Запускает тесты, определённые в CMake
 
-      # Создание пакета для macOS
+      # Создание пакета для windows
       - name: Package for windows  # Название шага
-        run: cmake --build . --target package  # Создаёт пакет для macOS с использованием CMake
+        run: cmake --build . --target package  # Создаёт пакет для windows с использованием CMake
 
-      # Создание релиза для macOS
+      # Создание релиза для windows
       - name: Create Release # Название шага
         id: create_release # Устанавливает идентификатор для использования в последующих шагах
         uses: actions/create-release@v1 # Использует действие для создания релиза на GitHub
