@@ -83,8 +83,12 @@ jobs:
         with:
           python-version: '3.x'
 
+        # создаём директорию
+      - name: Create Boost directory
+        run: mkdir ./boost
+
       - name: Download Boost Archive
-        run: curl -L https://archives.boost.io/release/1.86.0/source/boost_1_86_0.zip -o ./boost/boost_1_81_0.zip
+        run: curl -L https://archives.boost.io/release/1.86.0/source/boost_1_86_0.zip -o ./boost/boost_1_86_0.zip
 
       - name: Extract Boost Archive
         run: 7z x ./boost/boost_1_81_0.zip -o./boost  # Replace 'boost_version' with your actual version
@@ -95,7 +99,7 @@ jobs:
           echo "Boost_DIR=./boost" >> $GITHUB_ENV
 
       # Генерация сборочных файлов
-      - name: Configure project  # Название шага
+      - name: Configure project  # Название шагаB
         run: cmake . -DPATCH_VERSION=${{ github.run_number }}  # Конфигурирует проект с использованием CMake и задаёт номер сборки как PATCH_VERSION
 
       # Компиляция проекта
