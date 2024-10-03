@@ -5,7 +5,7 @@ set(PROJECT_VERSION 0.0.${PATCH_VERSION})
 
 project(helloworld VERSION ${PROJECT_VERSION})
 
-find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+find_package(Boost REQUIRED COMPONENTS unit_test_framework)
 
 configure_file(version.h.in version.h)
 
