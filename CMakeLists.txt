@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VERSION 0.0.${PATCH_VERSION})
-cmake_policy(SET CMP0167 NEW)
+
 
 project(helloworld VERSION ${PROJECT_VERSION})
 
@@ -12,9 +12,13 @@ find_package(Boost REQUIRED COMPONENTS unit_test_framework)
 
 configure_file(version.h.in version.h)
 
+
 add_executable(helloworld_cli main.cpp)
 add_library(helloworld lib.cpp)
 add_executable(test_version test_version.cpp)
+
+target_link_libraries(test_version ${Boost_LIBRARIES} helloworld)
+
 
 set_target_properties(helloworld_cli helloworld test_version PROPERTIES
     CXX_STANDARD 14
