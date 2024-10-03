@@ -85,25 +85,27 @@ jobs:
       - name: Extract Boost Archive
         run: unzip -o ./boost/boost_1_86_0.zip -d ./boost
 
-      - name: Debug Boost Environment Variables
+      # Debug Boost Environment Variables before setting them
+      - name: Debug Boost Environment Variables Before Setting Them
         run: |
-          echo "BOOST_ROOT is set to: $BOOST_ROOT"
-          echo "Boost_INCLUDE_DIR is set to: $Boost_INCLUDE_DIR"
-          echo "Boost_LIBRARYDIR is set to: $Boost_LIBRARYDIR"
+          echo "Current Directory is $(pwd)"
+          ls ./boost/boost_1_86_0
 
-    # Set environment variables after extracting Boost
+      # Set environment variables after extracting Boost and ensure they are correct.
       - name: Set Boost Environment Variables
         run: |
           echo "BOOST_ROOT=$(pwd)/boost/boost_1_86_0" >> $GITHUB_ENV
           echo "Boost_INCLUDE_DIR=$(pwd)/boost/boost_1_86_0" >> $GITHUB_ENV
           echo "Boost_LIBRARYDIR=$(pwd)/boost/boost_1_86_0/stage/lib" >> $GITHUB_ENV
 
+      # Debug Boost Environment Variables after setting them to ensure they are set correctly.
+      - name: Debug Boost Environment Variables After Setting Them
+        run: |
+          echo "BOOST_ROOT is set to: $BOOST_ROOT"
+          echo "Boost_INCLUDE_DIR is set to: $Boost_INCLUDE_DIR"
+          echo "Boost_LIBRARYDIR is set to: $Boost_LIBRARYDIR"
 
-      - name: Create annotation for build error
-        run: echo "::error file=your_file.cpp,line=1::An error occurred while building."
-
-
-      - name: Configure project
+      - name: Configure project with Boost settings
         run: cmake . -DPATCH_VERSION=${{ github.run_number }} -DBOOST_ROOT=${{ env.BOOST_ROOT }}
 
       - name: Build project
@@ -115,7 +117,7 @@ jobs:
       - name: Package for Windows
         run: cmake --build . --target package
 
-    # Create Release for Windows
+      # Create Release for Windows with correct syntax for the upload URL.
       - name: Create Release for Windows
         id: create_release_windows
         uses: actions/create-release@v1
@@ -125,8 +127,8 @@ jobs:
           tag_name: v${{ github.run_number }}
           release_name: Release ${{ github.run_number }}
 
-      # Upload Release Asset for Windows
-      - name: Upload Release Asset
+      # Upload Release Asset for Windows with corrected syntax.
+      - name: Upload Release Asset for Windows
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
