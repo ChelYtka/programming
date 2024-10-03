@@ -2,9 +2,12 @@ cmake_minimum_required(VERSION 3.10)
 
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VERSION 0.0.${PATCH_VERSION})
+cmake_policy(SET CMP0167 NEW)
 
 project(helloworld VERSION ${PROJECT_VERSION})
 
+set(Boost_DEBUG ON)  # Enable debug output for Boost
+set(Boost_USE_STATIC_LIBS OFF)  # Use shared libraries if available
 find_package(Boost REQUIRED COMPONENTS unit_test_framework)
 
 configure_file(version.h.in version.h)
