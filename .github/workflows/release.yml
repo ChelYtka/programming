@@ -93,9 +93,10 @@ jobs:
       - name: Extract Boost Archive
         run: unzip -o ./boost/boost_1_86_0.zip -d ./boost
 
+      # Установите переменные окружения после распаковки Boost
       - name: Set Boost Environment Variables
         run: |
-          echo "Boost_INCLUDE_DIR=./boost/boost_1_81_0/boost" >> $GITHUB_ENV
+          echo "Boost_INCLUDE_DIR=./boost/boost_1_86_0/boost" >> $GITHUB_ENV
           echo "Boost_DIR=./boost" >> $GITHUB_ENV
 
 
