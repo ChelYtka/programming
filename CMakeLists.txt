@@ -6,6 +6,11 @@ set(PROJECT_VERSION 0.0.${PATCH_VERSION})
 
 project(helloworld VERSION ${PROJECT_VERSION})
 
+set(BOOST_ROOT "C:/path/to/boost")
+set(Boost_INCLUDE_DIR "${BOOST_ROOT}/include")
+set(Boost_LIBRARY_DIR "${BOOST_ROOT}/lib")
+find_package(Boost REQUIRED COMPONENTS unit_test_framework)
+
 set(Boost_DEBUG ON)  # Enable debug output for Boost
 set(Boost_USE_STATIC_LIBS OFF)  # Use shared libraries if available
 find_package(Boost REQUIRED COMPONENTS unit_test_framework)
