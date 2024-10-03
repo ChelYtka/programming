@@ -91,7 +91,7 @@ jobs:
         run: curl -L https://archives.boost.io/release/1.86.0/source/boost_1_86_0.zip -o ./boost/boost_1_86_0.zip
 
       - name: Extract Boost Archive
-        run: 7z x ./boost/boost_1_81_0.zip -o./boost/  # Replace 'boost_version' with your actual version
+        run: unzip -o ./boost/boost_1_86_0.zip -d ./boost  # Replace 'boost_version' with your actual version
 
       - name: Set Boost Environment Variables
         run: |
