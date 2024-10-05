@@ -1,140 +1,132 @@
-name: 'C++ CI'
+name: 'C++ CI'  # Название workflow
 
 on:
   push:
     branches:
-      - main
+      - main  # Триггер для запуска workflow при пуше в ветку main (или другую указанную ветку)
       - feature/github_actions
 
 jobs:
-
-  build-linux:
-    runs-on: ubuntu-latest
-    permissions: write-all
+  # Workflow для сборки и релиза на macOS
+  build-macos:
+    runs-on: macos-latest  # Указывает, что job будет выполняться на последней версии macOS
+    permissions: write-all  # Устанавливает разрешения на запись для всех действий
     steps:
-
-      - uses: actions/checkout@v3
+      # Чекаут кода
+      - uses: actions/checkout@v3  # Использует действие для извлечения кода из репозитория
         with:
-          submodules: true
+          submodules: true  # Загружает подмодули, если они есть
 
+      # Установка зависимостей для macOS
+      - name: Install dependencies  # Название шага
+        run: brew update && brew install boost  # Обновляет Homebrew и устанавливает библиотеку Boost
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y libboost-test-dev
+      # Генерация сборочных файлов
+      - name: Configure project  # Название шага
+        run: cmake . -DPATCH_VERSION=${{ github.run_number }}  # Конфигурирует проект с использованием CMake и задаёт номер сборки как PATCH_VERSION
 
+      # Компиляция проекта
+      - name: Build project  # Название шага
+        run: cmake --build .  # Собирает проект, используя CMake
 
-      - name: Configure project
-        run: cmake . -DPATCH_VERSION=${{ github.run_number }}
+      # Запуск тестов
+      - name: Run tests  # Название шага
+        run: cmake --build . --target test  # Запускает тесты, определённые в CMake
 
+      # Создание пакета для macOS
+      - name: Package for macOS  # Название шага
+        run: cmake --build . --target package  # Создаёт пакет для macOS с использованием CMake
 
-      - name: Build project
-        run: cmake --build .
-
-
-      - name: Run tests
-        run: cmake --build . --target test
-
-
-      - name: Package for Linux
-        run: cmake --build . --target package
-
-
-      - name: Check if tag exists
+      # Проверка на существование тега перед созданием релиза
+      - name: Check if tag exists  # Название шага
         run: |
-          if git rev-parse "refs/tags/v${{ github.run_number }}-linux" >/dev/null 2>&1; then   # Проверяет, существует ли тег для текущей сборки Linux
-            echo "Tag exists for Linux. Exiting..."   # Выводит сообщение, если тег существует
-            exit 0   # Выходит из job, если тег найден
+          if git rev-parse "refs/tags/v${{ github.run_number }}-macos" >/dev/null 2>&1; then  # Проверяет, существует ли тег для текущей сборки macOS
+            echo "Tag exists for macOS. Exiting..."  # Выводит сообщение, если тег существует
+            exit 0  # Выходит из job, если тег найден
           fi
 
-
-      - name: Create Release for Linux
-        id: create_release_linux
-        uses: actions/create-release@v1
+      # Создание релиза для macOS
+      - name: Create Release for macOS  # Название шага
+        id: create_release_macos  # Устанавливает идентификатор для использования в последующих шагах
+        uses: actions/create-release@v1  # Использует действие для создания релиза на GitHub
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Использует токен доступа GitHub из секретов репозитория
         with:
-          tag_name: v${{ github.run_number }}-linux
-          release_name: Release ${{ github.run_number }} for Linux
-          draft: false
-          prerelease: false
+          tag_name: v${{ github.run_number }}-macos  # Задаёт имя тега для релиза
+          release_name: Release ${{ github.run_number }} for macOS  # Задаёт имя релиза
+          draft: false  # Указывает, что релиз не является черновиком
+          prerelease: false  # Указывает, что релиз не является предварительным
 
-
-      - name: Upload Linux Release Asset
-        id: upload_release_asset_linux
-        uses: actions/upload-release-asset@v1
+      # Загрузка пакета в релиз для macOS
+      - name: Upload macOS Release Asset  # Название шага
+        id: upload_release_asset_macos  # Устанавливает идентификатор для использования в последующих шагах
+        uses: actions/upload-release-asset@v1  # Использует действие для загрузки артефактов в релиз на GitHub
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Использует токен доступа GitHub из секретов репозитория
         with:
-          upload_url: ${{ steps.create_release_linux.outputs.upload_url }}
-          asset_path: ./helloworld-0.0.${{ github.run_number }}-Linux.deb
-          asset_name: helloworld-0.0.${{ github.run_number }}-Linux.deb
-          asset_content_type: application/vnd.debian.binary-package
+          upload_url: ${{ steps.create_release_macos.outputs.upload_url }}  # URL для загрузки артефактов из предыдущего шага создания релиза
+          asset_path: ./helloworld-0.0.${{ github.run_number }}-macOS.pkg  # Путь к пакету, который будет загружен
+          asset_name: helloworld-0.0.${{ github.run_number }}-macOS.pkg  # Имя загружаемого пакета
+          asset_content_type: application/octet-stream  # Тип содержимого загружаемого пакета
 
-  build-windows:
-    runs-on: windows-latest
+  # Workflow для сборки и релиза на Linux
+  build-linux:
+    runs-on: ubuntu-latest  # Указывает, что job будет выполняться на последней версии Ubuntu
+    permissions: write-all  # Устанавливает разрешения на запись для всех действий
     steps:
-      - uses: actions/checkout@v3
+      # Чекаут кода
+      - uses: actions/checkout@v3  # Использует действие для извлечения кода из репозитория
         with:
-          submodules: true
+          submodules: true  # Загружает подмодули, если они есть
 
-      - name: Create Boost directory
-        run: mkdir ./boost
+      # Установка зависимостей для Linux
+      - name: Install dependencies  # Название шага
+        run: sudo apt-get update && sudo apt-get install -y libboost-test-dev  # Обновляет список пакетов и устанавливает библиотеку Boost для тестирования
 
-      - name: Download Boost Archive
-        run: curl -L https://boostorg.jfrog.io/artifactory/main/release/1.86.0/source/boost_1_86_0.zip -o ./boost/boost_1_86_0.zip
+      # Генерация сборочных файлов
+      - name: Configure project  # Название шага
+        run: cmake . -DPATCH_VERSION=${{ github.run_number }}  # Конфигурирует проект с использованием CMake и задаёт номер сборки как PATCH_VERSION
 
-      - name: Extract Boost Archive
-        run: unzip -o ./boost/boost_1_86_0.zip -d ./boost
+      # Компиляция проекта
+      - name: Build project  # Название шага
+        run: cmake --build .  # Собирает проект, используя CMake
 
-      # Debug Boost Environment Variables before setting them
-      - name: Debug Boost Environment Variables Before Setting Them
+      # Запуск тестов
+      - name: Run tests  # Название шага
+        run: cmake --build . --target test  # Запускает тесты, определённые в CMake
+
+      # Создание пакета для Linux
+      - name: Package for Linux  # Название шага
+        run: cmake --build . --target package  # Создаёт пакет для Linux с использованием CMake
+
+      # Проверка на существование тега перед созданием релиза
+      - name: Check if tag exists  # Название шага 
         run: |
-          echo "Current Directory is $(pwd)"
-          ls ./boost/boost_1_86_0
+          if git rev-parse "refs/tags/v${{ github.run_number }}-linux" >/dev/null 2>&1; then   # Проверяет, существует ли тег для текущей сборки Linux  
+            echo "Tag exists for Linux. Exiting..."   # Выводит сообщение, если тег существует  
+            exit 0   # Выходит из job, если тег найден  
+          fi 
 
-      # Set environment variables after extracting Boost and ensure they are correct.
-      - name: Set Boost Environment Variables
-        run: |
-          echo "BOOST_ROOT=$(pwd)/boost/boost_1_86_0" >> $GITHUB_ENV
-          echo "Boost_INCLUDE_DIR=$(pwd)/boost/boost_1_86_0" >> $GITHUB_ENV
-          echo "Boost_LIBRARYDIR=$(pwd)/boost/boost_1_86_0/stage/lib" >> $GITHUB_ENV
-
-      # Debug Boost Environment Variables after setting them to ensure they are set correctly.
-      - name: Debug Boost Environment Variables After Setting Them
-        run: |
-          echo "BOOST_ROOT is set to: $BOOST_ROOT"
-          echo "Boost_INCLUDE_DIR is set to: $Boost_INCLUDE_DIR"
-          echo "Boost_LIBRARYDIR is set to: $Boost_LIBRARYDIR"
-
-      - name: Configure project with Boost settings
-        run: cmake . -DPATCH_VERSION=${{ github.run_number }} -DBOOST_ROOT=${{ env.BOOST_ROOT }}
-
-      - name: Build project
-        run: cmake --build .
-
-      - name: Run tests
-        run: cmake --build . --target test
-
-      - name: Package for Windows
-        run: cmake --build . --target package
-
-      # Create Release for Windows with correct syntax for the upload URL.
-      - name: Create Release for Windows
-        id: create_release_windows
-        uses: actions/create-release@v1
+      # Создание релиза для Linux  
+      - name: Create Release for Linux  
+        id: create_release_linux  
+        uses: actions/create-release@v1  
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
         with:
-          tag_name: v${{ github.run_number }}
-          release_name: Release ${{ github.run_number }}
+          tag_name: v${{ github.run_number }}-linux  
+          release_name: Release ${{ github.run_number }} for Linux  
+          draft: false  
+          prerelease: false  
 
-      # Upload Release Asset for Windows with corrected syntax.
-      - name: Upload Release Asset for Windows
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
+      # Загрузка пакета в релиз для Linux  
+      - name: Upload Linux Release Asset  
+        id: upload_release_asset_linux  
+        uses: actions/upload-release-asset@v1  
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
         with:
-          upload_url:${{ steps.create_release_windows.outputs.upload_url }}
-          asset_path=./helloworld-0.0.${{ github.run_number }}-Windows.msi
-          asset_name=helloworld-0.0.${{ github.run_number }}-Windows.msi
-          asset_content_type=application/x-msi
+          upload_url: ${{ steps.create_release_linux.outputs.upload_url }}  
+          asset_path: ./helloworld-0.0.${{ github.run_number }}-Linux.deb  
+          asset_name: helloworld-0.0.${{ github.run_number }}-Linux.deb  
+          asset_content_type: application/vnd.debian.binary-package   
