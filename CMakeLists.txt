@@ -31,3 +31,6 @@ set(CPACK_PACKAGE_CONTACT example@example.com)
 include(CPack)
 
 enable_testing() # Включает тестирование
+
+set(CPACK_PROJECT_NAME ${PROJECT_NAME})
+set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
