@@ -42,9 +42,9 @@
         "new": "cpp",
         "numbers": "cpp",
         "ostream": "cpp",
+        "sstream": "cpp",
         "stdexcept": "cpp",
         "streambuf": "cpp",
-        "typeinfo": "cpp",
-        "sstream": "cpp"
+        "typeinfo": "cpp"
     }
 }

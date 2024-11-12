@@ -32,5 +32,7 @@ include(CPack)
 
 enable_testing() # Включает тестирование
 
+add_executable(lab2 main.cpp ip_filter.cpp)
+
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
