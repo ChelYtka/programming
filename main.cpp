@@ -2,14 +2,10 @@
 #include "ip_filter.cpp"
 #include <vector>
 #include <tuple>
-#include "lib.h"
+
 
 int main () {
-
-    std::cout << "Version: " << version() << std::endl;
-    std::cout << "Hello, world!" << std::endl;
-    return 0;
-
+    
     std::vector<std::tuple<int, int, int, int>> ip_adress;
 
     ip_adress = readfile("ip_filter.tsv");
