@@ -1,4 +1,11 @@
 #include "ip_filter.h"
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include <sstream>
+#include <algorithm>
+#include <tuple>
 
 std::tuple<int, int, int, int> parse_ip_adress(std::string str)
 {
