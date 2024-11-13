@@ -3,7 +3,7 @@ name: 'C++ CI'  # Название workflow
 on:
   push:
     branches:
-      - main  # Триггер для запуска workflow при пуше в ветку main (или другую указанную ветку)
+      - lab2  # Триггер для запуска workflow при пуше в ветку main (или другую указанную ветку)
       - feature/github_actions
 
 jobs:
@@ -100,33 +100,33 @@ jobs:
         run: cmake --build . --target package  # Создаёт пакет для Linux с использованием CMake
 
       # Проверка на существование тега перед созданием релиза
-      - name: Check if tag exists  # Название шага 
+      - name: Check if tag exists  # Название шага
         run: |
-          if git rev-parse "refs/tags/v${{ github.run_number }}-linux" >/dev/null 2>&1; then   # Проверяет, существует ли тег для текущей сборки Linux  
-            echo "Tag exists for Linux. Exiting..."   # Выводит сообщение, если тег существует  
-            exit 0   # Выходит из job, если тег найден  
-          fi 
+          if git rev-parse "refs/tags/v${{ github.run_number }}-linux" >/dev/null 2>&1; then   # Проверяет, существует ли тег для текущей сборки Linux
+            echo "Tag exists for Linux. Exiting..."   # Выводит сообщение, если тег существует
+            exit 0   # Выходит из job, если тег найден
+          fi
 
-      # Создание релиза для Linux  
-      - name: Create Release for Linux  
-        id: create_release_linux  
-        uses: actions/create-release@v1  
+      # Создание релиза для Linux
+      - name: Create Release for Linux
+        id: create_release_linux
+        uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ github.run_number }}-linux  
-          release_name: Release ${{ github.run_number }} for Linux  
-          draft: false  
-          prerelease: false  
+          tag_name: v${{ github.run_number }}-linux
+          release_name: Release ${{ github.run_number }} for Linux
+          draft: false
+          prerelease: false
 
-      # Загрузка пакета в релиз для Linux  
-      - name: Upload Linux Release Asset  
-        id: upload_release_asset_linux  
-        uses: actions/upload-release-asset@v1  
+      # Загрузка пакета в релиз для Linux
+      - name: Upload Linux Release Asset
+        id: upload_release_asset_linux
+        uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release_linux.outputs.upload_url }}  
-          asset_path: ./helloworld-0.0.${{ github.run_number }}-Linux.deb  
-          asset_name: helloworld-0.0.${{ github.run_number }}-Linux.deb  
-          asset_content_type: application/vnd.debian.binary-package   
+          upload_url: ${{ steps.create_release_linux.outputs.upload_url }}
+          asset_path: ./helloworld-0.0.${{ github.run_number }}-Linux.deb
+          asset_name: helloworld-0.0.${{ github.run_number }}-Linux.deb
+          asset_content_type: application/vnd.debian.binary-package
