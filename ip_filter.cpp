@@ -1,17 +1,10 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <tuple>
-#include <sstream>
-#include <algorithm>
-
+#include "ip_filter.h"
 
 std::tuple<int, int, int, int> parse_ip_adress(std::string str)
 {
     // Разделение ip адреса на отдельные числа
     std::istringstream ip_stream(str);
-    
+
     int n1, n2, n3, n4;
     std::getline(ip_stream, str, '.');
     n1 = std::stoi(str);
