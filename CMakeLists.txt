@@ -4,7 +4,7 @@ set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 # Создает переменные PATCH_VERSION и PROJECT_VESRION для управления версиями проекта.
 
 project(lab2 VERSION ${PROJECT_VESRION}) # Определяет имя проекта lab2 и использует переменную PROJECT_VESRION для указания версии проекта.
-add_executable(lab2 main.cpp ip_filter.cpp)
+add_executable(lab2 main.cpp ip_filter.cpp ip_filter.h)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CXX_STANDARD_REQUIRED ON)
@@ -17,6 +17,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     # Укажите зависимости пакета
     set(CPACK_DEBIAN_PACKAGE_DEPENDS "libgtk-3-dev libstdc++6-dev")
 endif()
+
 # Установка пакета ZIP для macOS
 if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(CPACK_GENERATOR ZIP) # Настройка CPack для создания пакетов ZIP (macOS)
@@ -33,6 +34,5 @@ include(CPack)
 enable_testing() # Включает тестирование
 
 add_subdirectory(gtests)
-
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
