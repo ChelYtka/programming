@@ -1,7 +1,7 @@
 name: 'C++ CI'
 
 # Запускаем workflow при пуше в ветки lab1 или feature/github_actions
-on:
+on: 
   # событие запускаем
   push:
     branches:
@@ -78,7 +78,7 @@ jobs:
       - name: Run Tests
         run: |
           ctest --output-on-failure || exit 1  # Проверяем наличие тестов и их успешное выполнение
-
+      
       # Создаем пакет
       - run: cmake --build . --target package
       # Создаем релиз для MacOS
