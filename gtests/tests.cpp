@@ -37,4 +37,5 @@ TEST(IPAddressTest, read_ip_addressesTest_empty_file) {
   // Для тестирования в github actions
   auto ipAddresses = readfile("../empty_file.tsv");
   EXPECT_EQ(ipAddresses, expectedIPAddresses);
+  
 }
