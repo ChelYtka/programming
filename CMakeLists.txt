@@ -4,7 +4,7 @@ set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 # Создает переменные PATCH_VERSION и PROJECT_VESRION для управления версиями проекта.
 
 project(lab2 VERSION ${PROJECT_VESRION}) # Определяет имя проекта lab2 и использует переменную PROJECT_VESRION для указания версии проекта.
-add_executable(lab2 main.cpp ip_filter.cpp ip_filter.h)
+#add_executable(lab2 main.cpp ip_filter.cpp ip_filter.h)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CXX_STANDARD_REQUIRED ON)
@@ -33,6 +33,6 @@ include(CPack)
 
 enable_testing() # Включает тестирование
 
-#add_subdirectory(gtests)
+add_subdirectory(gtests)
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
