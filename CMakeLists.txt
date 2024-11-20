@@ -4,12 +4,12 @@ set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 # Создает переменные PATCH_VERSION и PROJECT_VESRION для управления версиями проекта.
 
 project(lab3 VERSION ${PROJECT_VESRION}) # Определяет имя проекта lab2 и использует переменную PROJECT_VESRION для указания версии проекта.
-# add_executable(lab2 main.cpp cool.cpp cool.h)
+add_executable(lab3 main.cpp)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CXX_STANDARD_REQUIRED ON)
 
-set(CPACK_PROJECT_NAME lab2)
+set(CPACK_PROJECT_NAME lab3)
 
 # Установка пакета DEB для Linux
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
