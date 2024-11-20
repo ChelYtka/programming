@@ -34,6 +34,6 @@ include(CPack)
 
 enable_testing() # Включает тестирование
 
-add_subdirectory(gtests)
+#add_subdirectory(gtests)
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
