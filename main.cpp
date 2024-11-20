@@ -1,5 +1,9 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
+#include <string>
+#include <sstream>
+#include <algorithm>
 #include <tuple>
 #include "ip_filter.h"
 
@@ -8,7 +12,7 @@ int main () {
     std::vector<std::tuple<int, int, int, int>> ip_adress;
 
     // считывает файл
-    ip_adress = readfile("../ip_filter.tsv");
+    ip_adress = readfile("ip_filter.tsv");
 
     sort_ip(ip_adress);
     // задание 1

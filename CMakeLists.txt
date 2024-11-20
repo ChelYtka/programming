@@ -8,7 +8,6 @@ add_executable(lab2 main.cpp ip_filter.cpp ip_filter.h)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CPACK_PROJECT_NAME lab2)
 
