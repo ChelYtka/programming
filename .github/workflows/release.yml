@@ -1,132 +1,92 @@
-name: 'C++ CI'  # Название workflow
+name: 'C++ CI'
 
+# Запускаем workflow при пуше в ветки lab1 или feature/github_actions
 on:
+  # событие запускаем
   push:
     branches:
-      - main  # Триггер для запуска workflow при пуше в ветку main (или другую указанную ветку)
+      - lab3
       - feature/github_actions
 
 jobs:
-  # Workflow для сборки и релиза на macOS
-  build-macos:
-    runs-on: macos-latest  # Указывает, что job будет выполняться на последней версии macOS
-    permissions: write-all  # Устанавливает разрешения на запись для всех действий
+  build_windows:
+    runs-on: windows-latest # Запускается на Windows-latest
+    permissions: write-all # Предоставляет права на запись всем ресурсам
     steps:
-      # Чекаут кода
-      - uses: actions/checkout@v3  # Использует действие для извлечения кода из репозитория
+      - uses: actions/checkout@v3  # Клонирует репозиторий, включая подмодули
         with:
-          submodules: true  # Загружает подмодули, если они есть
-
-      # Установка зависимостей для macOS
-      - name: Install dependencies  # Название шага
-        run: brew update && brew install boost  # Обновляет Homebrew и устанавливает библиотеку Boost
-
-      # Генерация сборочных файлов
-      - name: Configure project  # Название шага
-        run: cmake . -DPATCH_VERSION=${{ github.run_number }}  # Конфигурирует проект с использованием CMake и задаёт номер сборки как PATCH_VERSION
-
-      # Компиляция проекта
-      - name: Build project  # Название шага
-        run: cmake --build .  # Собирает проект, используя CMake
-
-      # Запуск тестов
-      - name: Run tests  # Название шага
-        run: cmake --build . --target test  # Запускает тесты, определённые в CMake
-
-      # Создание пакета для macOS
-      - name: Package for macOS  # Название шага
-        run: cmake --build . --target package  # Создаёт пакет для macOS с использованием CMake
-
-      # Проверка на существование тега перед созданием релиза
-      - name: Check if tag exists  # Название шага
-        run: |
-          if git rev-parse "refs/tags/v${{ github.run_number }}-macos" >/dev/null 2>&1; then  # Проверяет, существует ли тег для текущей сборки macOS
-            echo "Tag exists for macOS. Exiting..."  # Выводит сообщение, если тег существует
-            exit 0  # Выходит из job, если тег найден
-          fi
-
-      # Создание релиза для macOS
-      - name: Create Release for macOS  # Название шага
-        id: create_release_macos  # Устанавливает идентификатор для использования в последующих шагах
-        uses: actions/create-release@v1  # Использует действие для создания релиза на GitHub
+          submodules: true
+      - run: cmake . -DPATCH_VERSION=${{ github.run_number }} # Конфигурирует проект с помощью CMake, используя номер запуска для PATCH_VERSION
+       # Сборка проекта с помощью CMake
+      - run: cmake --build .
+       # Создание пакета
+      - run: cmake --build . --target package
+      # Выводит список файлов в текущей директории
+      - name: List files
+        run: dir
+      # Создает релиз для Windows
+      - name: Create Release (windows)
+        id: create_release_windows
+        uses: actions/create-release@v1 # Использует действие для создания релиза
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Использует токен доступа GitHub из секретов репозитория
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Использует GITHUB_TOKEN для аутентификации
         with:
-          tag_name: v${{ github.run_number }}-macos  # Задаёт имя тега для релиза
-          release_name: Release ${{ github.run_number }} for macOS  # Задаёт имя релиза
-          draft: false  # Указывает, что релиз не является черновиком
-          prerelease: false  # Указывает, что релиз не является предварительным
-
-      # Загрузка пакета в релиз для macOS
-      - name: Upload macOS Release Asset  # Название шага
-        id: upload_release_asset_macos  # Устанавливает идентификатор для использования в последующих шагах
-        uses: actions/upload-release-asset@v1  # Использует действие для загрузки артефактов в релиз на GitHub
+          # Устанавливает tag_name, release_name и другие параметры
+          tag_name: windows${{ github.run_number }}
+          release_name: Release ${{ github.run_number }} (windows)
+          draft: false # Не публикует релиз как черновик
+          prerelease: false # Не публикует как предварительный релиз
+      # Загружает файл релиза для Windows
+      - name: Upload Release Asset (windows)
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Использует токен доступа GitHub из секретов репозитория
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release_macos.outputs.upload_url }}  # URL для загрузки артефактов из предыдущего шага создания релиза
-          asset_path: ./helloworld-0.0.${{ github.run_number }}-macOS.pkg  # Путь к пакету, который будет загружен
-          asset_name: helloworld-0.0.${{ github.run_number }}-macOS.pkg  # Имя загружаемого пакета
-          asset_content_type: application/octet-stream  # Тип содержимого загружаемого пакета
+          upload_url: ${{ steps.create_release_windows.outputs.upload_url }}
+          asset_path: ./laba3-0.0.${{ github.run_number }}-win64.zip
+          asset_name: laba3-0.0.${{ github.run_number }}-win64.zip
+          asset_content_type: application/zip
 
-  # Workflow для сборки и релиза на Linux
-  build-linux:
-    runs-on: ubuntu-latest  # Указывает, что job будет выполняться на последней версии Ubuntu
-    permissions: write-all  # Устанавливает разрешения на запись для всех действий
+  build_ubuntu:
+    # Запускаем job на ubuntu-latest
+    runs-on: ubuntu-latest
+    # Предоставляем разрешения на запись во все ресурсы
+    permissions: write-all
     steps:
-      # Чекаут кода
-      - uses: actions/checkout@v3  # Использует действие для извлечения кода из репозитория
+      # Клонируем репозиторий, включая submodules
+      - uses: actions/checkout@v3
         with:
-          submodules: true  # Загружает подмодули, если они есть
-
-      # Установка зависимостей для Linux
-      - name: Install dependencies  # Название шага
-        run: sudo apt-get update && sudo apt-get install -y libboost-test-dev  # Обновляет список пакетов и устанавливает библиотеку Boost для тестирования
-
-      # Генерация сборочных файлов
-      - name: Configure project  # Название шага
-        run: cmake . -DPATCH_VERSION=${{ github.run_number }}  # Конфигурирует проект с использованием CMake и задаёт номер сборки как PATCH_VERSION
-
-      # Компиляция проекта
-      - name: Build project  # Название шага
-        run: cmake --build .  # Собирает проект, используя CMake
-
-      # Запуск тестов
-      - name: Run tests  # Название шага
-        run: cmake --build . --target test  # Запускает тесты, определённые в CMake
-
-      # Создание пакета для Linux
-      - name: Package for Linux  # Название шага
-        run: cmake --build . --target package  # Создаёт пакет для Linux с использованием CMake
-
-      # Проверка на существование тега перед созданием релиза
-      - name: Check if tag exists  # Название шага 
-        run: |
-          if git rev-parse "refs/tags/v${{ github.run_number }}-linux" >/dev/null 2>&1; then   # Проверяет, существует ли тег для текущей сборки Linux  
-            echo "Tag exists for Linux. Exiting..."   # Выводит сообщение, если тег существует  
-            exit 0   # Выходит из job, если тег найден  
-          fi 
-
-      # Создание релиза для Linux  
-      - name: Create Release for Linux  
-        id: create_release_linux  
-        uses: actions/create-release@v1  
+          submodules: true
+      # Конфигурируем проект с помощью CMake, используя номер запуска для PATCH_VERSION
+      - run: cmake . -DPATCH_VERSION=${{ github.run_number }}
+      # Строим проект с помощью CMake
+      - run: cmake --build .
+      # Создаем пакет
+      - run: cmake --build . --target package
+      # Создаем релиз для Ubuntu
+      - name: Create Release (Ubuntu)
+        id: create_release_ubuntu
+        # Используем action для создания релиза
+        uses: actions/create-release@v1
+        # Используем GITHUB_TOKEN для аутентификации
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # Устанавливаем tag_name, release_name и другие параметры
         with:
-          tag_name: v${{ github.run_number }}-linux  
-          release_name: Release ${{ github.run_number }} for Linux  
-          draft: false  
-          prerelease: false  
-
-      # Загрузка пакета в релиз для Linux  
-      - name: Upload Linux Release Asset  
-        id: upload_release_asset_linux  
-        uses: actions/upload-release-asset@v1  
+          tag_name: v${{ github.run_number }} # Используем номер запуска для тега
+          release_name: Release ${{ github.run_number }} (Ubuntu)
+          draft: false # Не публикуем релиз в черновике
+          prerelease: false # Не публикуем как предварительную версию
+      # Загружаем релизный ассет для Ubuntu
+      - name: Upload Release Asset (Ubuntu)
+        id: upload-release-asset-ubuntu
+        uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release_linux.outputs.upload_url }}  
-          asset_path: ./helloworld-0.0.${{ github.run_number }}-Linux.deb  
-          asset_name: helloworld-0.0.${{ github.run_number }}-Linux.deb  
-          asset_content_type: application/vnd.debian.binary-package   
+          upload_url: ${{ steps.create_release_ubuntu.outputs.upload_url }}
+          asset_path: ./laba3-0.0.${{ github.run_number }}-Linux.deb
+          asset_name: laba3-0.0.${{ github.run_number }}-Linux.deb
+          asset_content_type: application/vnd.debian.binary-package
+          allowUpdates: true # Разрешаем обновление уже загруженного ассета
