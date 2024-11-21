@@ -307,5 +307,328 @@ class DoubleLinkedList
             ++size;
         }
 
-        // line 259
+        // добавление элемента в начало
+        void push_front(int value)
+        {
+            Node* newNode = new Node(value);
+            if (head == nullptr)
+            {
+                head = newNode;
+                tail = newNode;
+            } else
+        {
+            newNode->next = head;
+            head->prev = newNode;
+            head = newNode;
+        }
+        ++size;
+        }
+
+        // добавление элемента по индексу
+        void insert(int index, int value)
+        {
+            if (index < 0 || index > size)
+            {
+                throw std::out_of_range("Индекс вне допустимого диапазона")
+            }
+            if (index == 0)
+            {
+                push_front(value);
+                return;
+            } else if (index == size)
+            {
+                push_back(value);
+                return;
+            }
+            Node* newNode = new Node(value);
+            Node* current = head;
+            for (int i = 0; i < index; ++i)
+            {
+                current = current->next;
+            }
+
+            newNode->next = current;
+            newNode->prev = current->prev;
+            current->prev->next = newNode;
+            current->prev = newNode;
+
+            ++size;
+        }
+
+        // удаление объекта по индексу
+        void erase(int value)
+        {
+            if (index < 0 || index >= size)
+            {
+                throw std::out_of_range("Индекс вне допустимого диапазона");
+            }
+
+            Node* current = head;
+            for (int i = 0; i < index; ++i)
+            {
+                current = current->next;
+            }
+
+            if (current->prev)
+            {
+                current->prev->next = current->next;
+            } else
+            {
+                head = current->next; // удаление головного элемента
+            }
+
+            if (current->next)
+            {
+                current->next->prev = current->prev;
+            } else
+            {
+                tail = current->prev; // удаление хвостового жлемента
+            }
+
+            delete current;
+            --size;
+        }
+
+        // Получение размера контейнера
+        int getSize() const
+        {
+        return size;
+        }
+
+        // вывод содержимого контейнера
+        void print() const
+        {
+            Node* current = head;
+            while (current != nullptr)
+            {
+                std::cout << current->value << " ";
+                current = current->next;
+            }
+            std::cout << std::endl;
+        }
+
+        // оператор [] длядоступа к элементам по индексу
+        int& operator[](int index)
+        {
+            if (index < 0; || index >=size)
+            {
+                throw std::out_of_range("Индекс вне диапазона");
+            }
+
+            Node* current = head;
+            for (int i = 0; i < index; ++i)
+            {
+                current = current->next;
+            }
+            return current->value;
+        }
+
+        // структура итератора для DoubleLinkedList
+        struct Iterator
+        {
+            Node* ptr;
+
+            // конструктор
+            Iterator(Node* ptr) : ptr(ptr) {}
+
+            // оператор разыменования
+            int operator*()
+            {
+                if (ptr == nullptr)
+                {
+                    throw std::out_of_range("Индекс вне диапазона");
+                }
+                return ptr->value;
+            }
+
+            // оператор сравнения (для проверка конца итерации)
+            bool operator!=(const Iterator& other)
+            {
+                return ptr != other.ptr;
+            }
+
+            // перемещение итератора на следующий элемент
+            Iterator& operator++()
+            {
+                ptr = ptr->next;
+                return *this;
+            }
+
+            int& get()
+            {
+                if (ptr == nullptr)
+                {
+                    throw std::out_of_range("Индекс вне диапазона");
+                }
+                return ptr->value;
+            }
+        };
+
+        // возвращает итератор на начало контейнера
+        Iterator begin()
+        {
+            return Iterator(head);
+        }
+
+        // возвращает итератор на конец контейнера
+        Iterator end()
+        {
+            return Iterator(nullptr);
+        }
+};
+
+
+// подноразовый список контейнера
+// односвязный список, где каждый элемент хранит ссылку только на следующий
+class SinglyLinkedList
+{
+    private:
+        struct Node
+        {
+            int value;
+            Node* next;
+
+            Node(int value) : value(value), next(nullptr) {}
+        };
+
+        Node* head;
+        int size;
+
+    public:
+        // конструктор
+        SinglyLinkedList() : head(nullptr), size(0) {}
+
+        // деструктор
+        ~SinglyLinkedList()
+        {
+            while (head != nullptr)
+            {
+                Node* next = head->next;
+                delete head;
+                head = next;
+            }
+        }
+
+        // перемещающий конструктор
+        SinglyLinkedList(SinglyLinkedList&& other) noexcept: head(other.head), size(other.size)
+        {
+            other.head = nullptr;
+            other.size = 0;
+        }
+
+        // перемещающий оператор присваивания
+        SinglyLinkedList& operator=(SinglyLinkedList&& other) noexcept
+        {
+            if (this != &other)
+            {
+                while (head != nullptr)
+                {
+                    Node* temp = head;
+                    head = head->next;
+                    delete temp;
+                }
+                head = other.head;
+                size = head.size;
+
+                other.head = nullptr;
+                other.size = 0;
+            }
+            return *this;
+        }
+
+        // добавление элемента в конец
+        void push_back(int value)
+        {
+            Node* newNode = mew Node(value);
+            if (head == nullptr)
+            {
+                head = newNode;
+            } else
+            {
+                Node* current = head;
+                while (current->next != null)
+                {
+                    current->next = newNode;
+                }
+                current->next = newNode;
+            }
+            ++size;
+        }
+
+        // добавление элемента в начало
+        void push_front(int value)
+        {
+            Node* newNode = new Node(value);
+            newNode->next = head;
+            head = newNode;
+            ++size;
+        }
+
+        // метод для вставки элемента по индексу
+        void insert(int index, int value)
+        {
+            if (index < 0 || index > size)
+            {
+                throw std::out_of_range("Индекс вне допустимого диапазона");
+            }
+            if (index == 0)
+            {
+                push_front(value);
+                return;
+            }
+
+            if (index == size)
+            {
+                push_back(value);
+                return;
+            }
+
+            Node* newNode = new Node(value);
+            Node* current = head;
+            for (int i = 0; i < index -1; ++i)
+            {
+                current = current->next;
+            }
+            newNode->next = current->next;
+            current->next = newNode;
+            ++size;
+        }
+
+        // удаление элемента по индексу
+        void erase(int value)
+        {
+            if (index < 0 || index >= size)
+            {
+                throw std::out_of_range("Индекс вне допустимого диапазона");
+            }
+            Node* current = head;
+            if (index == 0)
+            {
+                head = current->next;
+                delete current;
+            } else
+            {
+                Node* prev = nullptr;
+                for (int i = 0; i < index; ++i)
+                {
+                    prev = current;
+                    current = current->next;
+                }
+                prev->next = current->next;
+                delete current;
+            }
+            --size;
+        }
+
+        // получение размера контейнера
+        int getSize() const
+        {
+            return size;
+        }
+
+        // вывод содержимого котейнера
+        void print() const
+        {
+            // 523
+        }
 }
