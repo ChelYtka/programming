@@ -729,7 +729,6 @@ void testContainer(const std::string& name, T& container)
     container.print();
 
 
-
     // Добавление элемента в начало
     container.push_front(10);
 
