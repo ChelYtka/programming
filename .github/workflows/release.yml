@@ -1,12 +1,9 @@
 name: 'C++ CI'
 
-# Запускаем workflow при пуше в ветки lab1 или feature/github_actions
 on: 
-  # событие запускаем
   push:
     branches:
-      - lab5
-      - feature/github_actions
+      - lab6
 
 jobs:
   build_windows:
@@ -38,8 +35,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release_windows.outputs.upload_url }}
-          asset_path: ./lab4-0.0.${{ github.run_number }}-win64.zip
-          asset_name: lab4-0.0.${{ github.run_number }}-win64.zip
+          asset_path: ./lab6-0.0.${{ github.run_number }}-win64.zip
+          asset_name: lab6-0.0.${{ github.run_number }}-win64.zip
           asset_content_type: application/zip
   
   build_ubuntu:
@@ -71,6 +68,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release_ubuntu.outputs.upload_url }}
-          asset_path: ./lab4-0.0.${{ github.run_number }}-Linux.zip
-          asset_name: lab4-0.0.${{ github.run_number }}-Linux.zip
+          asset_path: ./lab6-0.0.${{ github.run_number }}-Linux.zip
+          asset_name: lab6-0.0.${{ github.run_number }}-Linux.zip
           asset_content_type: application/zip
