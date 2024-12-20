@@ -1,21 +1,25 @@
-cmake_minimum_required(VERSION 3.10)
-set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
-set(PROJECT_VERSION 0.0.${PATCH_VERSION})
-project(lab6 VERSION ${PROJECT_VERSION})
-add_executable(lab6 main.cpp Document.h GraphicPrimitive.h DocController.h)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")    # Флаг для компилятора MSVC (Windows)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
-    else()
-    # Флаг для g++ и clang++ (Linux, MacOS)    
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
-endif()
-install(TARGETS lab6 DESTINATION bin)
-set(CPACK_GENERATOR "ZIP;DEB")
-set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
-set(CPACK_PACKAGE_NAME "lab6")
-set(CPACK_PACKAGE_DESCRIPTION "Описание вашего проекта")
-set(CPACK_PACKAGE_VENDOR "Ваше имя или компания")
-set(CPACK_PACKAGE_CONTACT "Ваш контактный email")
-include(CPack)
+cmake_minimum_required(VERSION 3.5.0)
+project(coursework VERSION 0.1.0 LANGUAGES C CXX)
+
+# Установка CMake для загрузки GLM через Git
+include(FetchContent)
+
+FetchContent_Declare(
+    glm
+    GIT_REPOSITORY https://github.com/g-truc/glm.git
+    GIT_TAG        master  # или укажите конкретный тег, например 0.9.9.8
+)
+
+FetchContent_MakeAvailable(glm)
+    
+# Убедитесь, что путь к заголовочным файлам добавлен
+include_directories(${glm_SOURCE_DIR}/glm)
+
+# Добавьте ваш исполняемый файл
+add_executable(coursework src/main.cpp)
+
+# Подключите GLM к вашему исполняемому файлу
+target_link_libraries(coursework glm::glm)
+
+
+
