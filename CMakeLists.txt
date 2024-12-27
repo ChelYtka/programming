@@ -11,7 +11,7 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(glm)
-    
+
 # Убедитесь, что путь к заголовочным файлам добавлен
 include_directories(${glm_SOURCE_DIR}/glm)
 
@@ -20,6 +20,3 @@ add_executable(coursework src/main.cpp)
 
 # Подключите GLM к вашему исполняемому файлу
 target_link_libraries(coursework glm::glm)
-
-
-
