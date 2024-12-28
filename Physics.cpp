@@ -34,7 +34,7 @@ void Physics::collideBalls(std::vector<Ball>& balls, std::vector<Dust>& dusts) c
                     for (int i = 0; i < 10; i++) {
                         double angle = (i * 2 * M_PI / 10);
                         Velocity velocity(100 * i, angle);
-                        Dust dust(velocity, a->getCenter(), 8, a->getColor(), false, 0.8);
+                        Dust dust(velocity, a->getCenter(), 8, a->getColor(), false, 0.2);
                         dusts.push_back(dust);
                     }
                 }
@@ -62,7 +62,7 @@ void Physics::collideWithBox(std::vector<Ball>& balls, std::vector<Dust>& dusts)
                 for (int i = 0; i < 10; i++) {
                     double angle = (i * 2 * M_PI / 10);
                     Velocity velocity(100 * i, angle);
-                    Dust dust(velocity, ball.getCenter(), 8, ball.getColor(), true, 0.8);
+                    Dust dust(velocity, ball.getCenter(), 8, ball.getColor(), true, 0.2);
                     dusts.push_back(dust);
                 }
             }
@@ -75,7 +75,7 @@ void Physics::collideWithBox(std::vector<Ball>& balls, std::vector<Dust>& dusts)
                 for (int i = 0; i < 10; i++) {
                     double angle = (i * 2 * M_PI / 10);
                     Velocity velocity(100 * i, angle);
-                    Dust dust(velocity, ball.getCenter(), 8, ball.getColor(), true, 0.8);
+                    Dust dust(velocity, ball.getCenter(), 8, ball.getColor(), true, 0.2);
                     dusts.push_back(dust);
                 }
             }
